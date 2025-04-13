@@ -230,16 +230,6 @@
     { src: 'card57.png', orientation: 'portrait' },
     { src: 'card58.png', orientation: 'portrait' },
     { src: 'card59.png', orientation: 'portrait' },
-    { src: 'card50.png', orientation: 'portrait' }, 
-    { src: 'card51.png', orientation: 'portrait' },
-    { src: 'card52.png', orientation: 'portrait' },
-    { src: 'card53.png', orientation: 'portrait' },
-    { src: 'card54.png', orientation: 'portrait' },
-    { src: 'card55.png', orientation: 'portrait' },
-    { src: 'card56.png', orientation: 'portrait' },
-    { src: 'card57.png', orientation: 'portrait' },
-    { src: 'card58.png', orientation: 'portrait' },
-    { src: 'card59.png', orientation: 'portrait' },
     { src: 'card60.png', orientation: 'portrait' },
     { src: 'card61.png', orientation: 'portrait' },
     { src: 'card62.png', orientation: 'portrait' },
@@ -596,27 +586,32 @@
 
   ];
 
-  let selectedCard = null;
+const cardsPerPage = 50;
+  let currentCardIndex = 0;
 
   function renderCards(cards, faceUp = true, limit = null, focus = false) {
     const container = document.getElementById('cardContainer');
     container.innerHTML = '';
-    selectedCard = null;
+    currentCardIndex = 0;
 
-    cards.forEach((cardData, index) => {
-      if (limit && index >= limit) return;
+    // Показати перші 50
+    loadMoreCards(cards, faceUp, limit, focus);
+  }
+
+  function loadMoreCards(cards = cardImages, faceUp = true, limit = null, focus = false) {
+    const container = document.getElementById('cardContainer');
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    const sliceEnd = Math.min(currentCardIndex + cardsPerPage, cards.length);
+
+    for (let i = currentCardIndex; i < sliceEnd; i++) {
+      const cardData = cards[i];
       const card = document.createElement('div');
-      card.className = `card ${focus ? cardData.orientation : 'portrait'} ${focus ? 'focused' : ''}`;
+      card.className = `card ${cardData.orientation}`;
       if (faceUp || focus) card.classList.add('flipped');
 
       card.onclick = () => {
-        if (!focus) {
-          document.querySelectorAll('.card.selected').forEach((el) => {
-            el.classList.remove('selected');
-          });
-          card.classList.add('selected');
-          selectedCard = card;
-        }
+        document.querySelectorAll('.card.selected').forEach(el => el.classList.remove('selected'));
+        card.classList.add('selected');
       };
 
       card.innerHTML = `
@@ -625,12 +620,20 @@
             <img src="${cardData.src}" />
           </div>
           <div class="card-face card-back">
-            <img src="back.png" />
+            <img src="back.jpg" />
           </div>
         </div>
       `;
       container.appendChild(card);
-    });
+    }
+
+    currentCardIndex = sliceEnd;
+
+    if (currentCardIndex < cards.length) {
+      loadMoreBtn.style.display = 'block';
+    } else {
+      loadMoreBtn.style.display = 'none';
+    }
   }
 
   function runSelection() {
@@ -639,6 +642,8 @@
     const showFront = document.getElementById('showFront').checked;
 
     const shuffled = [...cardImages].sort(() => 0.5 - Math.random());
+
+    document.getElementById('loadMoreBtn').style.display = 'none';
 
     if (mode === 'manual-open') {
       renderCards(cardImages, true);
@@ -649,7 +654,7 @@
     }
   }
 
-  runSelection(); // показати одразу
+  runSelection();
 </script>
 
 </body>
