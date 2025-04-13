@@ -1,79 +1,72 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Картки. Простір Ольги Литвиненко</title>
-  <link rel="icon" type="image/x-icon" href="favicon.ico" />
-  <link href="https://fonts.googleapis.com/css2?family=Lora&display=swap" rel="stylesheet" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Інтерактивні картки</title>
+  <link rel="icon" href="favicon.ico" />
   <style>
-    body {
+
+    body, button, input, select, textarea {
+      font-family: 'Montserrat', sans-serif;
+    }
+    h1, h2, h3, h4, h5, h6 {
       font-family: 'Lora', serif;
-      background-color: #fdfaf6;
-      text-align: center;
-      padding: 20px;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f8f5f0;
       margin: 0;
-      color: #3d3d3d;
+      padding: 20px;
+      overflow-x: hidden;
     }
-
     h1 {
-      margin-bottom: 10px;
-      font-size: 24px;
+      text-align: center;
     }
-
     .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
       margin-bottom: 20px;
     }
-
-    select, input[type="checkbox"] {
-      margin: 5px;
-      padding: 5px;
+    select, button {
+      background-color: #f2e8dc;
+      color: #333;
+      border: 1px solid #cbbfa3;
+      transition: background 0.3s ease;
+      padding: 10px;
       font-size: 16px;
-    }
-
-    button {
-      padding: 10px 16px;
-      margin: 5px;
-      font-size: 16px;
-      cursor: pointer;
-      border: none;
       border-radius: 6px;
-      background-color: #e2d8c6;
-      color: #3d3d3d;
-      transition: background-color 0.3s;
+      border: 1px solid #ccc;
+      cursor: pointer;
+    box-shadow: 1px 1px 4px rgba(0,0,0,0.05);
     }
-
-    button:hover {
-      background-color: #d1c6b5;
-    }
-
     .card-container {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 15px;
     }
-
     .card {
+      position: relative;
+      width: 120px;
+      height: 160px;
       perspective: 1000px;
       cursor: pointer;
-      position: relative;
-      flex-shrink: 0;
-      border-radius: 10px;
-      overflow: hidden;
-      transition: transform 0.3s ease;
+    box-shadow: 1px 1px 4px rgba(0,0,0,0.05);
+      transition: transform 0.3s;
     }
-
     .card.landscape {
       width: 160px;
       height: 120px;
     }
-
-    .card.portrait {
-      width: 120px;
-      height: 160px;
-    }
-
     .inner-card {
       width: 100%;
       height: 100%;
@@ -81,11 +74,9 @@
       transform-style: preserve-3d;
       position: relative;
     }
-
     .card.flipped .inner-card {
       transform: rotateY(180deg);
     }
-
     .card-face {
       position: absolute;
       width: 100%;
@@ -94,80 +85,101 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      border-radius: 10px;
+      overflow: hidden;
     }
-
-    .card-front::before,
-    .card-back::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background-size: cover;
-      background-position: center;
-      filter: blur(12px) brightness(1.1);
-      z-index: 0;
-    }
-
     .card-front img,
     .card-back img {
-      max-width: 100%;
-      max-height: 100%;
-      z-index: 1;
-      border-radius: 6px;
-      object-fit: contain;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .card-back {
+      transform: rotateY(180deg);
+    }
+    .focused-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .focused-card {
+      position: relative;
+      max-width: 90vw;
+      max-height: 90vh;
+      transform: scale(1.2);
+    }
+    .focus-button-group {
+      position: absolute;
+      bottom: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+    }
+    .selected-bar {
+      margin-top: 30px;
+      text-align: center;
+    }
+    .selected-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+    }
+  
+    button {
+      background-color: #e6ddd0;
+      color: #2d2d2d;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: 500;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      background-color: #d6c9b8;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    }
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
     }
 
-    .card-back::before {
-      background-image: url('back.png');
-    }
-
-    .focused {
-      transform: scale(1.4);
-      z-index: 10;
-    }
-
-    .card.selected {
-      box-shadow: 0 0 0 4px #7fa1ff inset, 0 0 10px #7fa1ff;
-    }
-
-    footer {
-      margin-top: 40px;
-      font-size: 14px;
-      color: #888;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-  </style>
+</style>
 </head>
 <body>
 
-<h1>Картки. Простір Ольги Литвиненко</h1>
+  <h1>Інтерактивні картки</h1>
 
-<div class="controls">
-  <label for="mode">Режим:</label>
-  <select id="mode">
-    <option value="manual-open">Свідомо (відкриті)</option>
-    <option value="manual-closed">Несвідомо (закриті)</option>
-    <option value="auto">Автоматично</option>
-  </select>
+  <div class="controls">
+    <label>Режим перегляду:
+      <select id="viewMode">
+        <option value="face">Відкриті картки</option>
+        <option value="back">Закриті картки</option>
+        <option value="auto">Автоматичний вибір</option>
+      </select>
+    </label>
 
-  <label for="count">Кількість:</label>
-  <select id="count">
-    <option value="1">1</option>
-    <option value="2">2</option>
-    <option value="3" selected>3</option>
-  </select>
+    <button onclick="shuffleCards()">Перемішати картки</button>
+    <button onclick="showAllCards()">Показати картки</button>
+  </div>
 
-  <label><input type="checkbox" id="showFront" checked /> Показати відкритими</label>
+  <div id="cardContainer" class="card-container"></div>
 
-  <button onclick="runSelection()">Підтвердити</button>
-</div>
+  <div class="selected-bar">
+    <button id="finishSelectionBtn" onclick="showSelection()" style="display:none;">Завершити вибір</button>
+    <button id="showSelectionBtn" onclick="showSelection()" style="display:none;">Показати мій вибір</button>
+    <button id="resetBtn" onclick="resetSelection()" style="display:none;">Повернутися до всіх карток</button>
+  </div>
 
-<div class="card-container" id="cardContainer"></div>
-
-<footer>
-  <p>Усі матеріали на цьому сайті є інтелектуальною власністю Ольги Литвиненко. Будь-яке копіювання, відтворення чи поширення без письмової згоди правовласника заборонене та захищене законом. Зв'язатися з правовласником: suippm@gmail.com</p>
-</footer>
+  <div id="focusedOverlay" class="focused-overlay" style="display: none;"></div>
 
 <script>
   const cardImages = [
@@ -586,76 +598,136 @@
 
   ];
 
-const cardsPerPage = 50;
-  let currentCardIndex = 0;
+    let selectedCards = [];
+    let currentMode = 'face';
 
-  function renderCards(cards, faceUp = true, limit = null, focus = false) {
-    const container = document.getElementById('cardContainer');
-    container.innerHTML = '';
-    currentCardIndex = 0;
+    function showAllCards() {
+      const viewMode = document.getElementById('viewMode').value;
+      const container = document.getElementById('cardContainer');
+      container.innerHTML = '';
+      selectedCards = [];
+      document.getElementById('showSelectionBtn').style.display = 'none';
+      document.getElementById('finishSelectionBtn').style.display = 'none';
+      document.getElementById('resetBtn').style.display = 'none';
+      document.getElementById('focusedOverlay').style.display = 'none';
+      currentMode = viewMode;
 
-    // Показати перші 50
-    loadMoreCards(cards, faceUp, limit, focus);
-  }
+      cardImages.forEach((card, index) => {
+        const cardElement = document.createElement('div');
+        cardElement.className = 'card ' + card.orientation;
+        const inner = document.createElement('div');
+        inner.className = 'inner-card';
+        const front = document.createElement('div');
+        front.className = 'card-face card-front';
+        const back = document.createElement('div');
+        back.className = 'card-face card-back';
+        const frontImg = document.createElement('img');
+        const backImg = document.createElement('img');
+        frontImg.src = card.src;
+        backImg.src = 'back.jpg';
+        front.appendChild(frontImg);
+        back.appendChild(backImg);
+        inner.appendChild(front);
+        inner.appendChild(back);
+        cardElement.appendChild(inner);
 
-  function loadMoreCards(cards = cardImages, faceUp = true, limit = null, focus = false) {
-    const container = document.getElementById('cardContainer');
-    const loadMoreBtn = document.getElementById('loadMoreBtn');
-    const sliceEnd = Math.min(currentCardIndex + cardsPerPage, cards.length);
+        if (viewMode === 'face') {
+          cardElement.classList.add('flipped');
+        }
 
-    for (let i = currentCardIndex; i < sliceEnd; i++) {
-      const cardData = cards[i];
-      const card = document.createElement('div');
-      card.className = `card ${cardData.orientation}`;
-      if (faceUp || focus) card.classList.add('flipped');
+        cardElement.onclick = () => focusCard(card, cardElement);
+        container.appendChild(cardElement);
+      });
+    }
 
-      card.onclick = () => {
-        document.querySelectorAll('.card.selected').forEach(el => el.classList.remove('selected'));
-        card.classList.add('selected');
+    function shuffleCards() {
+      cardImages.sort(() => Math.random() - 0.5);
+      showAllCards();
+    }
+
+    function focusCard(cardData, cardElement) {
+      const overlay = document.getElementById('focusedOverlay');
+      overlay.innerHTML = '';
+      overlay.style.display = 'flex';
+
+      const cardDiv = document.createElement('div');
+      cardDiv.className = 'focused-card card ' + cardData.orientation;
+      const inner = document.createElement('div');
+      inner.className = 'inner-card flipped';
+      const front = document.createElement('div');
+      front.className = 'card-face card-front';
+      const img = document.createElement('img');
+      img.src = currentMode === 'back' ? 'back.jpg' : cardData.src;
+      front.appendChild(img);
+      inner.appendChild(front);
+      cardDiv.appendChild(inner);
+
+      const btnGroup = document.createElement('div');
+      btnGroup.className = 'focus-button-group';
+
+      const selectBtn = document.createElement('button');
+      selectBtn.textContent = 'Обрати цю картку';
+      selectBtn.onclick = () => {
+        if (selectedCards.length >= 5) {
+          alert('Максимум карток обрано');
+          return;
+        }
+        selectedCards.push(cardData);
+        overlay.style.display = 'none';
+        if (selectedCards.length > 0) {
+          document.getElementById('finishSelectionBtn').style.display = 'inline-block';
+          document.getElementById('showSelectionBtn').style.display = 'inline-block';
+        }
       };
 
-      card.innerHTML = `
-        <div class="inner-card">
-          <div class="card-face card-front" style="background-image: url('${cardData.src}')">
-            <img src="${cardData.src}" />
-          </div>
-          <div class="card-face card-back">
-            <img src="back.jpg" />
-          </div>
-        </div>
-      `;
-      container.appendChild(card);
+      const cancelBtn = document.createElement('button');
+      cancelBtn.textContent = 'Скасувати';
+      cancelBtn.onclick = () => overlay.style.display = 'none';
+
+      btnGroup.appendChild(selectBtn);
+      btnGroup.appendChild(cancelBtn);
+      cardDiv.appendChild(btnGroup);
+      overlay.appendChild(cardDiv);
     }
 
-    currentCardIndex = sliceEnd;
+    function showSelection() {
+      const container = document.getElementById('cardContainer');
+      container.innerHTML = '';
+      document.getElementById('showSelectionBtn').style.display = 'none';
+      document.getElementById('finishSelectionBtn').style.display = 'none';
+      document.getElementById('resetBtn').style.display = 'inline-block';
+      document.getElementById('finishSelectionBtn').style.display = 'none';
 
-    if (currentCardIndex < cards.length) {
-      loadMoreBtn.style.display = 'block';
-    } else {
-      loadMoreBtn.style.display = 'none';
+      selectedCards.forEach(card => {
+        const cardElement = document.createElement('div');
+        cardElement.className = 'card ' + card.orientation;
+        const inner = document.createElement('div');
+        inner.className = 'inner-card flipped';
+        const front = document.createElement('div');
+        front.className = 'card-face card-front';
+        const img = document.createElement('img');
+        img.src = card.src;
+        front.appendChild(img);
+        inner.appendChild(front);
+        cardElement.appendChild(inner);
+        container.appendChild(cardElement);
+      });
     }
-  }
 
-  function runSelection() {
-    const mode = document.getElementById('mode').value;
-    const count = parseInt(document.getElementById('count').value);
-    const showFront = document.getElementById('showFront').checked;
-
-    const shuffled = [...cardImages].sort(() => 0.5 - Math.random());
-
-    document.getElementById('loadMoreBtn').style.display = 'none';
-
-    if (mode === 'manual-open') {
-      renderCards(cardImages, true);
-    } else if (mode === 'manual-closed') {
-      renderCards(cardImages, false);
-    } else if (mode === 'auto') {
-      renderCards(shuffled, showFront, count, true);
+    function resetSelection() {
+      selectedCards = [];
+      document.getElementById('resetBtn').style.display = 'none';
+      document.getElementById('showSelectionBtn').style.display = 'none';
+      document.getElementById('finishSelectionBtn').style.display = 'none';
+      showAllCards();
     }
-  }
 
-  runSelection();
-</script>
+    window.onload = showAllCards;
 
+  </script>
+
+  <footer style="margin-top: 60px; padding: 20px; text-align: center; font-size: 14px; color: #555; border-top: 1px solid #ddd;">
+    Увесь вміст цього сайту є інтелектуальною власністю Ольги Литвиненко. Будь-яке копіювання, відтворення чи поширення можливе лише за згодою правовласника. Всі права захищені. suippm@gmail.com
+  </footer>
 </body>
 </html>
