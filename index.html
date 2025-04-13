@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Картки. Простір Ольги Литвиненко</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <link href="https://fonts.googleapis.com/css2?family=Lora&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Lora', serif;
+      background-color: #fdfaf6;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+      color: #3d3d3d;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      font-size: 24px;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+    }
+
+    select, input[type="checkbox"] {
+      margin: 5px;
+      padding: 5px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 16px;
+      margin: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      background-color: #e2d8c6;
+      color: #3d3d3d;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #d1c6b5;
+    }
+
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .card {
+      perspective: 1000px;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+
+    .card.landscape {
+      width: 160px;
+      height: 120px;
+    }
+
+    .card.portrait {
+      width: 120px;
+      height: 160px;
+    }
+
+    .inner-card {
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+      position: relative;
+    }
+
+    .card.flipped .inner-card {
+      transform: rotateY(180deg);
+    }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card-front::before,
+    .card-back::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      filter: blur(12px) brightness(1.1);
+      z-index: 0;
+    }
+
+    .card-front img,
+    .card-back img {
+      max-width: 100%;
+      max-height: 100%;
+      z-index: 1;
+      border-radius: 6px;
+      object-fit: contain;
+    }
+
+    .card-back::before {
+      background-image: url('back.png');
+    }
+
+    .focused {
+      transform: scale(1.4);
+      z-index: 10;
+    }
+
+    .card.selected {
+      box-shadow: 0 0 0 4px #7fa1ff inset, 0 0 10px #7fa1ff;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #888;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Картки. Простір Ольги Литвиненко</h1>
+
+<div class="controls">
+  <label for="mode">Режим:</label>
+  <select id="mode">
+    <option value="manual-open">Свідомо (відкриті)</option>
+    <option value="manual-closed">Несвідомо (закриті)</option>
+    <option value="auto">Автоматично</option>
+  </select>
+
+  <label for="count">Кількість:</label>
+  <select id="count">
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3" selected>3</option>
+  </select>
+
+  <label><input type="checkbox" id="showFront" checked /> Показати відкритими</label>
+
+  <button onclick="runSelection()">Підтвердити</button>
+</div>
+
+<div class="card-container" id="cardContainer"></div>
+
+<footer>
+  <p>Усі матеріали на цьому сайті є інтелектуальною власністю Ольги Литвиненко. Будь-яке копіювання, відтворення чи поширення без письмової згоди правовласника заборонене та захищене законом. Зв'язатися з правовласником: suippm@gmail.com</p>
+</footer>
+
+<script>
+  const cardImages = [
+    { src: 'card1.png', orientation: 'portrait' },
+    { src: 'card2.png', orientation: 'portrait' },
+    { src: 'card3.png', orientation: 'portrait' },
+    { src: 'card4.png', orientation: 'portrait' },
+    { src: 'card5.png', orientation: 'portrait' },
+    { src: 'card6.png', orientation: 'portrait' },
+    { src: 'card7.png', orientation: 'portrait' },
+    { src: 'card8.png', orientation: 'portrait' },
+    { src: 'card9.png', orientation: 'portrait' },
+    { src: 'card10.png', orientation: 'portrait' },
+    { src: 'card11.png', orientation: 'portrait' },
+    { src: 'card12.png', orientation: 'portrait' },
+    { src: 'card13.png', orientation: 'portrait' },
+    { src: 'card14.png', orientation: 'portrait' },
+    { src: 'card15.png', orientation: 'portrait' },
+    { src: 'card16.png', orientation: 'portrait' },
+    { src: 'card17.png', orientation: 'portrait' },
+    { src: 'card18.png', orientation: 'portrait' },
+    { src: 'card19.png', orientation: 'portrait' },
+    { src: 'card20.png', orientation: 'portrait' },
+    { src: 'card21.png', orientation: 'portrait' },
+    { src: 'card22.png', orientation: 'portrait' },
+    { src: 'card23.png', orientation: 'portrait' },
+    { src: 'card24.png', orientation: 'portrait' },
+    { src: 'card25.png', orientation: 'portrait' },   
+    { src: 'card26.png', orientation: 'portrait' },
+    { src: 'card27.png', orientation: 'portrait' },
+    { src: 'card28.png', orientation: 'portrait' },
+    { src: 'card29.png', orientation: 'portrait' },
+    { src: 'card30.png', orientation: 'portrait' },
+    { src: 'card31.png', orientation: 'portrait' },
+    { src: 'card32.png', orientation: 'portrait' },
+    { src: 'card33.png', orientation: 'portrait' },
+    { src: 'card34.png', orientation: 'portrait' },
+    { src: 'card35.png', orientation: 'portrait' },
+    { src: 'card36.png', orientation: 'portrait' },
+    { src: 'card37.png', orientation: 'portrait' },
+    { src: 'card38.png', orientation: 'portrait' },
+    { src: 'card39.png', orientation: 'portrait' },
+    { src: 'card40.png', orientation: 'portrait' },
+    { src: 'card41.png', orientation: 'portrait' },
+    { src: 'card42.png', orientation: 'portrait' },
+    { src: 'card43.png', orientation: 'portrait' },
+    { src: 'card44.png', orientation: 'portrait' },
+    { src: 'card45.png', orientation: 'portrait' },
+    { src: 'card46.png', orientation: 'portrait' },
+    { src: 'card47.png', orientation: 'portrait' },
+    { src: 'card48.png', orientation: 'portrait' },
+    { src: 'card49.png', orientation: 'portrait' },
+    { src: 'card50.png', orientation: 'portrait' },
+    { src: 'card51.png', orientation: 'portrait' },
+    { src: 'card52.png', orientation: 'portrait' },
+    { src: 'card53.png', orientation: 'portrait' },
+    { src: 'card54.png', orientation: 'portrait' },
+    { src: 'card55.png', orientation: 'portrait' },    
+    { src: 'card56.png', orientation: 'portrait' },
+    { src: 'card57.png', orientation: 'portrait' },
+    { src: 'card58.png', orientation: 'portrait' },
+    { src: 'card59.png', orientation: 'portrait' },
+    { src: 'card50.png', orientation: 'portrait' }, 
+    { src: 'card51.png', orientation: 'portrait' },
+    { src: 'card52.png', orientation: 'portrait' },
+    { src: 'card53.png', orientation: 'portrait' },
+    { src: 'card54.png', orientation: 'portrait' },
+    { src: 'card55.png', orientation: 'portrait' },
+    { src: 'card56.png', orientation: 'portrait' },
+    { src: 'card57.png', orientation: 'portrait' },
+    { src: 'card58.png', orientation: 'portrait' },
+    { src: 'card59.png', orientation: 'portrait' },
+    { src: 'card60.png', orientation: 'portrait' },
+    { src: 'card61.png', orientation: 'portrait' },
+    { src: 'card62.png', orientation: 'portrait' },
+    { src: 'card63.png', orientation: 'portrait' },
+    { src: 'card64.png', orientation: 'portrait' },
+    { src: 'card65.png', orientation: 'portrait' },
+    { src: 'card66.png', orientation: 'portrait' },
+    { src: 'card67.png', orientation: 'portrait' },
+    { src: 'card68.png', orientation: 'portrait' },
+    { src: 'card69.png', orientation: 'portrait' },
+    { src: 'card70.png', orientation: 'portrait' },
+    { src: 'card71.png', orientation: 'portrait' },
+    { src: 'card72.png', orientation: 'portrait' },
+    { src: 'card73.png', orientation: 'portrait' },
+    { src: 'card74.png', orientation: 'portrait' },
+    { src: 'card75.png', orientation: 'portrait' },    
+    { src: 'card76.png', orientation: 'portrait' },
+    { src: 'card77.png', orientation: 'portrait' },
+    { src: 'card78.png', orientation: 'portrait' },
+    { src: 'card79.png', orientation: 'portrait' },
+    { src: 'card80.png', orientation: 'portrait' },
+    { src: 'card81.png', orientation: 'portrait' },
+    { src: 'card82.png', orientation: 'portrait' },
+    { src: 'card83.png', orientation: 'portrait' },
+    { src: 'card84.png', orientation: 'portrait' },
+    { src: 'card85.png', orientation: 'portrait' },
+    { src: 'card86.png', orientation: 'portrait' },
+    { src: 'card87.png', orientation: 'portrait' },
+    { src: 'card88.png', orientation: 'portrait' },
+    { src: 'card89.png', orientation: 'portrait' },
+    { src: 'card90.png', orientation: 'portrait' },
+    { src: 'card91.png', orientation: 'portrait' },
+    { src: 'card92.png', orientation: 'portrait' },
+    { src: 'card93.png', orientation: 'portrait' },
+    { src: 'card94.png', orientation: 'portrait' },
+    { src: 'card95.png', orientation: 'portrait' },
+    { src: 'card96.png', orientation: 'portrait' },
+    { src: 'card97.png', orientation: 'portrait' },
+    { src: 'card98.png', orientation: 'portrait' },
+    { src: 'card99.png', orientation: 'portrait' },
+    { src: 'card100.png', orientation: 'portrait' },
+    { src: 'card101.png', orientation: 'portrait' },
+    { src: 'card102.png', orientation: 'portrait' },
+    { src: 'card103.png', orientation: 'portrait' },
+    { src: 'card104.png', orientation: 'portrait' },
+    { src: 'card105.png', orientation: 'portrait' },    
+    { src: 'card106.png', orientation: 'portrait' },
+    { src: 'card107.png', orientation: 'portrait' },
+    { src: 'card108.png', orientation: 'portrait' },
+    { src: 'card109.png', orientation: 'portrait' },
+    { src: 'card110.png', orientation: 'portrait' }, 
+    { src: 'card111.png', orientation: 'portrait' },
+    { src: 'card112.png', orientation: 'portrait' },
+    { src: 'card113.png', orientation: 'portrait' },
+    { src: 'card114.png', orientation: 'portrait' },
+    { src: 'card115.png', orientation: 'portrait' },
+    { src: 'card116.png', orientation: 'portrait' },
+    { src: 'card117.png', orientation: 'portrait' },
+    { src: 'card118.png', orientation: 'portrait' },
+    { src: 'card119.png', orientation: 'portrait' },
+    { src: 'card120.png', orientation: 'portrait' },
+    { src: 'card121.png', orientation: 'portrait' },
+    { src: 'card122.png', orientation: 'portrait' },
+    { src: 'card123.png', orientation: 'portrait' },
+    { src: 'card124.png', orientation: 'portrait' },
+    { src: 'card125.png', orientation: 'portrait' },    
+    { src: 'card126.png', orientation: 'portrait' },
+    { src: 'card127.png', orientation: 'portrait' },
+    { src: 'card128.png', orientation: 'portrait' },
+    { src: 'card129.png', orientation: 'portrait' },
+    { src: 'card130.png', orientation: 'portrait' },
+    { src: 'card131.png', orientation: 'portrait' },
+    { src: 'card132.png', orientation: 'portrait' },
+    { src: 'card133.png', orientation: 'portrait' },
+    { src: 'card134.png', orientation: 'portrait' },
+    { src: 'card135.png', orientation: 'portrait' },
+    { src: 'card136.png', orientation: 'portrait' },
+    { src: 'card137.png', orientation: 'portrait' },
+    { src: 'card138.png', orientation: 'portrait' },
+    { src: 'card139.png', orientation: 'portrait' },
+    { src: 'card140.png', orientation: 'portrait' },
+    { src: 'card141.png', orientation: 'portrait' },
+    { src: 'card142.png', orientation: 'portrait' },
+    { src: 'card143.png', orientation: 'portrait' },
+    { src: 'card144.png', orientation: 'portrait' },
+    { src: 'card145.png', orientation: 'portrait' },
+    { src: 'card146.png', orientation: 'portrait' },
+    { src: 'card147.png', orientation: 'portrait' },
+    { src: 'card148.png', orientation: 'portrait' },
+    { src: 'card149.png', orientation: 'portrait' },
+    { src: 'card150.png', orientation: 'portrait' },
+    { src: 'card151.png', orientation: 'portrait' },
+    { src: 'card152.png', orientation: 'portrait' },
+    { src: 'card153.png', orientation: 'portrait' },
+    { src: 'card154.png', orientation: 'portrait' },
+    { src: 'card155.png', orientation: 'portrait' },    
+    { src: 'card156.png', orientation: 'portrait' },
+    { src: 'card157.png', orientation: 'portrait' },
+    { src: 'card158.png', orientation: 'portrait' },
+    { src: 'card159.png', orientation: 'portrait' },
+    { src: 'card160.png', orientation: 'portrait' },
+    { src: 'card161.png', orientation: 'portrait' },
+    { src: 'card162.png', orientation: 'portrait' },
+    { src: 'card163.png', orientation: 'portrait' },
+    { src: 'card164.png', orientation: 'portrait' },
+    { src: 'card165.png', orientation: 'portrait' },
+    { src: 'card166.png', orientation: 'portrait' },
+    { src: 'card167.png', orientation: 'portrait' },
+    { src: 'card168.png', orientation: 'portrait' },
+    { src: 'card169.png', orientation: 'portrait' },
+    { src: 'card170.png', orientation: 'portrait' },
+    { src: 'card171.png', orientation: 'portrait' },
+    { src: 'card172.png', orientation: 'portrait' },
+    { src: 'card173.png', orientation: 'portrait' },
+    { src: 'card174.png', orientation: 'portrait' },
+    { src: 'card175.png', orientation: 'portrait' },    
+    { src: 'card176.png', orientation: 'portrait' },
+    { src: 'card177.png', orientation: 'portrait' },
+    { src: 'card178.png', orientation: 'portrait' },
+    { src: 'card179.png', orientation: 'portrait' },
+    { src: 'card180.png', orientation: 'portrait' }, 
+    { src: 'card181.png', orientation: 'portrait' },
+    { src: 'card182.png', orientation: 'portrait' },
+    { src: 'card183.png', orientation: 'portrait' },
+    { src: 'card184.png', orientation: 'portrait' },
+    { src: 'card185.png', orientation: 'portrait' },
+    { src: 'card186.png', orientation: 'portrait' },
+    { src: 'card187.png', orientation: 'portrait' },
+    { src: 'card188.png', orientation: 'portrait' },
+    { src: 'card189.png', orientation: 'portrait' },
+    { src: 'card190.png', orientation: 'portrait' },
+    { src: 'card191.png', orientation: 'portrait' },
+    { src: 'card192.png', orientation: 'portrait' },
+    { src: 'card193.png', orientation: 'portrait' },
+    { src: 'card194.png', orientation: 'portrait' },
+    { src: 'card195.png', orientation: 'portrait' },
+    { src: 'card196.png', orientation: 'portrait' },
+    { src: 'card197.png', orientation: 'portrait' },
+    { src: 'card198.png', orientation: 'portrait' },
+    { src: 'card199.png', orientation: 'portrait' },
+    { src: 'card200.png', orientation: 'portrait' },
+    { src: 'card201.png', orientation: 'portrait' },
+    { src: 'card202.png', orientation: 'portrait' },
+    { src: 'card203.png', orientation: 'portrait' },
+    { src: 'card204.png', orientation: 'portrait' },
+    { src: 'card205.png', orientation: 'portrait' },    
+    { src: 'card206.png', orientation: 'portrait' },
+    { src: 'card207.png', orientation: 'portrait' },
+    { src: 'card208.png', orientation: 'portrait' },
+    { src: 'card209.png', orientation: 'portrait' },
+    { src: 'card210.png', orientation: 'portrait' }, 
+    { src: 'card211.png', orientation: 'portrait' },   
+    { src: 'card212.png', orientation: 'portrait' },
+    { src: 'card213.png', orientation: 'portrait' },
+    { src: 'card214.png', orientation: 'portrait' },
+    { src: 'card215.png', orientation: 'portrait' },
+    { src: 'card216.png', orientation: 'portrait' }, 
+    { src: 'card217.png', orientation: 'portrait' },
+    { src: 'card218.png', orientation: 'portrait' },
+    { src: 'card219.png', orientation: 'portrait' },
+    { src: 'card220.png', orientation: 'portrait' },
+    { src: 'card221.png', orientation: 'portrait' },
+    { src: 'card222.png', orientation: 'portrait' },
+    { src: 'card223.png', orientation: 'portrait' },
+    { src: 'card224.png', orientation: 'portrait' },
+    { src: 'card225.png', orientation: 'portrait' },    
+    { src: 'card226.png', orientation: 'landscape' },
+    { src: 'card227.png', orientation: 'landscape' },
+    { src: 'card228.png', orientation: 'landscape' },
+    { src: 'card229.png', orientation: 'landscape' },
+    { src: 'card230.png', orientation: 'landscape' },    
+    { src: 'card231.png', orientation: 'landscape' },
+    { src: 'card232.png', orientation: 'landscape' },
+    { src: 'card233.png', orientation: 'landscape' },
+    { src: 'card234.png', orientation: 'landscape' },
+    { src: 'card235.png', orientation: 'landscape' },    
+    { src: 'card236.png', orientation: 'landscape' },
+    { src: 'card237.png', orientation: 'landscape' },
+    { src: 'card238.png', orientation: 'landscape' },
+    { src: 'card239.png', orientation: 'landscape' },
+    { src: 'card240.png', orientation: 'landscape' },    
+    { src: 'card241.png', orientation: 'landscape' },
+    { src: 'card242.png', orientation: 'landscape' },
+    { src: 'card243.png', orientation: 'landscape' },
+    { src: 'card244.png', orientation: 'landscape' },
+    { src: 'card245.png', orientation: 'landscape' },    
+    { src: 'card246.png', orientation: 'landscape' },
+    { src: 'card247.png', orientation: 'landscape' },
+    { src: 'card248.png', orientation: 'landscape' },
+    { src: 'card249.png', orientation: 'landscape' },
+    { src: 'card250.png', orientation: 'landscape' },    
+    { src: 'card251.png', orientation: 'landscape' },
+    { src: 'card252.png', orientation: 'landscape' },
+    { src: 'card253.png', orientation: 'landscape' },
+    { src: 'card254.png', orientation: 'landscape' },
+    { src: 'card255.png', orientation: 'landscape' },    
+    { src: 'card256.png', orientation: 'landscape' },
+    { src: 'card257.png', orientation: 'landscape' },
+    { src: 'card258.png', orientation: 'landscape' },
+    { src: 'card259.png', orientation: 'landscape' },
+    { src: 'card260.png', orientation: 'landscape' },    
+    { src: 'card261.png', orientation: 'landscape' },
+    { src: 'card262.png', orientation: 'landscape' },
+    { src: 'card263.png', orientation: 'landscape' },
+    { src: 'card264.png', orientation: 'landscape' },
+    { src: 'card265.png', orientation: 'landscape' },    
+    { src: 'card266.png', orientation: 'landscape' },
+    { src: 'card267.png', orientation: 'landscape' },
+    { src: 'card268.png', orientation: 'landscape' },
+    { src: 'card269.png', orientation: 'landscape' },
+    { src: 'card270.png', orientation: 'landscape' },    
+    { src: 'card271.png', orientation: 'landscape' },
+    { src: 'card272.png', orientation: 'landscape' },
+    { src: 'card273.png', orientation: 'landscape' },
+    { src: 'card274.png', orientation: 'landscape' },
+    { src: 'card275.png', orientation: 'landscape' },    
+    { src: 'card276.png', orientation: 'landscape' },
+    { src: 'card277.png', orientation: 'landscape' },
+    { src: 'card278.png', orientation: 'landscape' },
+    { src: 'card279.png', orientation: 'landscape' },
+    { src: 'card280.png', orientation: 'landscape' },    
+    { src: 'card281.png', orientation: 'landscape' },
+    { src: 'card282.png', orientation: 'landscape' },
+    { src: 'card283.png', orientation: 'landscape' },
+    { src: 'card284.png', orientation: 'landscape' },
+    { src: 'card285.png', orientation: 'landscape' },    
+    { src: 'card286.png', orientation: 'landscape' },
+    { src: 'card287.png', orientation: 'landscape' },
+    { src: 'card288.png', orientation: 'landscape' },
+    { src: 'card289.png', orientation: 'landscape' },
+    { src: 'card290.png', orientation: 'landscape' },    
+    { src: 'card291.png', orientation: 'landscape' },
+    { src: 'card292.png', orientation: 'landscape' },
+    { src: 'card293.png', orientation: 'landscape' },
+    { src: 'card294.png', orientation: 'landscape' },
+    { src: 'card295.png', orientation: 'landscape' },    
+    { src: 'card296.png', orientation: 'landscape' },
+    { src: 'card297.png', orientation: 'landscape' },
+    { src: 'card298.png', orientation: 'landscape' },
+    { src: 'card299.png', orientation: 'landscape' },
+    { src: 'card300.png', orientation: 'landscape' },    
+    { src: 'card301.png', orientation: 'landscape' },
+    { src: 'card302.png', orientation: 'landscape' },
+    { src: 'card303.png', orientation: 'landscape' },
+    { src: 'card304.png', orientation: 'landscape' },
+    { src: 'card305.png', orientation: 'landscape' },    
+    { src: 'card306.png', orientation: 'landscape' },
+    { src: 'card307.png', orientation: 'landscape' },
+    { src: 'card308.png', orientation: 'landscape' },
+    { src: 'card309.png', orientation: 'landscape' },
+    { src: 'card310.png', orientation: 'landscape' }, 
+    { src: 'card311.png', orientation: 'landscape' },   
+    { src: 'card312.png', orientation: 'landscape' },
+    { src: 'card313.png', orientation: 'landscape' },
+    { src: 'card314.png', orientation: 'landscape' },
+    { src: 'card315.png', orientation: 'landscape' },
+    { src: 'card316.png', orientation: 'landscape' }, 
+    { src: 'card317.png', orientation: 'landscape' },
+    { src: 'card318.png', orientation: 'landscape' },
+    { src: 'card319.png', orientation: 'landscape' },
+    { src: 'card320.png', orientation: 'landscape' },
+    { src: 'card321.png', orientation: 'landscape' },
+    { src: 'card322.png', orientation: 'landscape' },
+    { src: 'card323.png', orientation: 'landscape' },
+    { src: 'card324.png', orientation: 'landscape' },
+    { src: 'card325.png', orientation: 'landscape' },    
+    { src: 'card326.png', orientation: 'landscape' },
+    { src: 'card327.png', orientation: 'landscape' },
+    { src: 'card328.png', orientation: 'landscape' },
+    { src: 'card329.png', orientation: 'landscape' },
+    { src: 'card330.png', orientation: 'landscape' },    
+    { src: 'card331.png', orientation: 'landscape' },
+    { src: 'card332.png', orientation: 'landscape' },
+    { src: 'card333.png', orientation: 'landscape' },
+    { src: 'card334.png', orientation: 'landscape' },
+    { src: 'card335.png', orientation: 'landscape' },    
+    { src: 'card336.png', orientation: 'landscape' },
+    { src: 'card337.png', orientation: 'landscape' },
+    { src: 'card338.png', orientation: 'landscape' },
+    { src: 'card339.png', orientation: 'landscape' },
+    { src: 'card340.png', orientation: 'landscape' },    
+    { src: 'card341.png', orientation: 'landscape' },
+    { src: 'card342.png', orientation: 'landscape' },
+    { src: 'card343.png', orientation: 'landscape' },
+    { src: 'card344.png', orientation: 'landscape' },
+    { src: 'card345.png', orientation: 'landscape' },    
+    { src: 'card346.png', orientation: 'landscape' },
+    { src: 'card347.png', orientation: 'landscape' },
+    { src: 'card348.png', orientation: 'landscape' },
+    { src: 'card349.png', orientation: 'landscape' },
+    { src: 'card350.png', orientation: 'landscape' },    
+    { src: 'card351.png', orientation: 'landscape' },
+    { src: 'card352.png', orientation: 'landscape' },
+    { src: 'card353.png', orientation: 'landscape' },
+    { src: 'card354.png', orientation: 'landscape' },
+    { src: 'card355.png', orientation: 'landscape' },    
+    { src: 'card356.png', orientation: 'landscape' },
+    { src: 'card357.png', orientation: 'landscape' },
+    { src: 'card358.png', orientation: 'landscape' },
+    { src: 'card359.png', orientation: 'landscape' },
+    { src: 'card360.png', orientation: 'landscape' },    
+    { src: 'card361.png', orientation: 'landscape' },
+    { src: 'card362.png', orientation: 'landscape' },
+    { src: 'card363.png', orientation: 'landscape' },
+    { src: 'card364.png', orientation: 'landscape' },
+    { src: 'card365.png', orientation: 'landscape' },    
+    { src: 'card366.png', orientation: 'landscape' },
+    { src: 'card367.png', orientation: 'landscape' },
+    { src: 'card368.png', orientation: 'landscape' },
+    { src: 'card369.png', orientation: 'landscape' },
+    { src: 'card370.png', orientation: 'landscape' },    
+    { src: 'card371.png', orientation: 'landscape' },
+    { src: 'card372.png', orientation: 'landscape' },
+    { src: 'card373.png', orientation: 'landscape' },
+    { src: 'card374.png', orientation: 'landscape' },
+    { src: 'card375.png', orientation: 'landscape' },    
+    { src: 'card376.png', orientation: 'landscape' },
+    { src: 'card377.png', orientation: 'landscape' },
+    { src: 'card378.png', orientation: 'landscape' },
+    { src: 'card379.png', orientation: 'landscape' },
+    { src: 'card380.png', orientation: 'landscape' },    
+    { src: 'card381.png', orientation: 'landscape' },
+    { src: 'card382.png', orientation: 'landscape' },
+    { src: 'card383.png', orientation: 'landscape' },
+    { src: 'card384.png', orientation: 'landscape' },
+    { src: 'card385.png', orientation: 'landscape' },    
+    { src: 'card386.png', orientation: 'landscape' },
+    { src: 'card387.png', orientation: 'landscape' },
+    { src: 'card388.png', orientation: 'landscape' },
+    { src: 'card389.png', orientation: 'landscape' },
+    { src: 'card390.png', orientation: 'landscape' },    
+    { src: 'card391.png', orientation: 'landscape' },
+    { src: 'card392.png', orientation: 'landscape' },
+    { src: 'card393.png', orientation: 'landscape' },
+    { src: 'card394.png', orientation: 'landscape' },
+    { src: 'card395.png', orientation: 'landscape' },    
+    { src: 'card396.png', orientation: 'landscape' },
+    { src: 'card397.png', orientation: 'landscape' },
+    { src: 'card398.png', orientation: 'landscape' },
+    { src: 'card399.png', orientation: 'landscape' },
+    { src: 'card400.png', orientation: 'landscape' },    
+    { src: 'card401.png', orientation: 'landscape' },
+    { src: 'card402.png', orientation: 'landscape' },
+    { src: 'card403.png', orientation: 'landscape' },
+    { src: 'card404.png', orientation: 'landscape' },
+    { src: 'card405.png', orientation: 'landscape' },    
+    { src: 'card406.png', orientation: 'landscape' },
+    { src: 'card407.png', orientation: 'landscape' },
+    { src: 'card408.png', orientation: 'landscape' },
+    { src: 'card409.png', orientation: 'landscape' },
+    { src: 'card410.png', orientation: 'landscape' }, 
+    { src: 'card411.png', orientation: 'landscape' },   
+    { src: 'card412.png', orientation: 'landscape' },
+
+  ];
+
+  let selectedCard = null;
+
+  function renderCards(cards, faceUp = true, limit = null, focus = false) {
+    const container = document.getElementById('cardContainer');
+    container.innerHTML = '';
+    selectedCard = null;
+
+    cards.forEach((cardData, index) => {
+      if (limit && index >= limit) return;
+      const card = document.createElement('div');
+      card.className = `card ${focus ? cardData.orientation : 'portrait'} ${focus ? 'focused' : ''}`;
+      if (faceUp || focus) card.classList.add('flipped');
+
+      card.onclick = () => {
+        if (!focus) {
+          document.querySelectorAll('.card.selected').forEach((el) => {
+            el.classList.remove('selected');
+          });
+          card.classList.add('selected');
+          selectedCard = card;
+        }
+      };
+
+      card.innerHTML = `
+        <div class="inner-card">
+          <div class="card-face card-front" style="background-image: url('${cardData.src}')">
+            <img src="${cardData.src}" />
+          </div>
+          <div class="card-face card-back">
+            <img src="back.png" />
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  function runSelection() {
+    const mode = document.getElementById('mode').value;
+    const count = parseInt(document.getElementById('count').value);
+    const showFront = document.getElementById('showFront').checked;
+
+    const shuffled = [...cardImages].sort(() => 0.5 - Math.random());
+
+    if (mode === 'manual-open') {
+      renderCards(cardImages, true);
+    } else if (mode === 'manual-closed') {
+      renderCards(cardImages, false);
+    } else if (mode === 'auto') {
+      renderCards(shuffled, showFront, count, true);
+    }
+  }
+
+  runSelection(); // показати одразу
+</script>
+
+</body>
+</html>
