@@ -18,13 +18,18 @@
       font-size: 32px;
       margin-bottom: 20px;
     }
-    .controls, .bottom-controls {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
+    .controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+#selection-controls {
+  margin-top: -10px;
+  margin-bottom: 30px;
+}
     .bottom-controls {
       display: none;
     }
@@ -83,6 +88,17 @@
 </head>
 <body>
   <h1>Картки. Простір Ольги Литвиненко</h1>
+<div class="controls main-controls">
+  <label>Режим перегляду:
+    <select onchange="switchMode(this.value)">
+      <option value="closed">Закриті картки</option>
+      <option value="open">Відкриті картки</option>
+    </select>
+  </label>
+  <button onclick="shuffleCards()">Перемішати картки</button>
+  <button onclick="autoSelect()">Автоматичний вибір</button>
+  <button onclick="showAllCards()">Показати всі картки</button>
+</div>
   <div class="controls hidden-controls" id="selection-controls">
 
     <button onclick="showSelection()">Показати вибір</button>
@@ -535,6 +551,13 @@ let currentMode = "closed";
       const cardsContainer = document.getElementById("cardsContainer");
       const bottomControls = document.querySelector(".bottom-controls");
       cardsContainer.innerHTML = "";
+const selectionControls = document.getElementById("selection-controls");
+if (selectedCards.length > 0) {
+  selectionControls.classList.remove("hidden-controls");
+} else {
+  selectionControls.classList.add("hidden-controls");
+}
+
       bottomControls.style.display = selectedCards.length > 0 ? "flex" : "none";
 
       cards.forEach((card, index) => {
@@ -579,11 +602,16 @@ document.getElementById("selection-controls").classList.remove("hidden-controls"
       });
     }
 
-    function switchMode(mode) {
-      currentMode = mode;
-      renderCards();
-document.getElementById("selection-controls").classList.add("hidden-controls");
-    }
+  function switchMode(mode) {
+  currentMode = mode;
+  renderCards();
+  const selectionControls = document.getElementById("selection-controls");
+  if (selectedCards.length > 0) {
+    selectionControls.classList.remove("hidden-controls");
+  } else {
+    selectionControls.classList.add("hidden-controls");
+  }
+}
 
     function shuffleCards() {
       for (let i = cards.length - 1; i > 0; i--) {
