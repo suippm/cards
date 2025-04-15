@@ -552,7 +552,7 @@ const modeSelect = document.getElementById('modeSelect');
       cards.forEach(card => {
         card.isBack = mode === 'closed';
         const div = document.createElement('div');
-        div.className = 'card' + (card.orientation === 'landscape' ? ' landscape' : '');
+        div.className = 'card' + ((mode === 'open' && card.orientation === 'landscape') ? ' landscape' : '');
         div.onclick = () => focusCard(card);
         const img = document.createElement('img');
         img.src = card.isBack ? 'back.png' : card.src;
