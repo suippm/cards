@@ -82,6 +82,7 @@
 </head>
 <body>
   <header>Аналітичні картки. Простір Ольги Литвиненко</header>
+ <div id="card-container" class="card-container"></div>
   <div class="controls">
     <label>Режим перегляду:
       <select onchange="switchMode(this.value)">
@@ -124,5 +125,10 @@
   </script>
 <script src="cards.js"></script>
 <script src="logic.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    renderCards();
+  });
+</script>
 </body>
 </html>
