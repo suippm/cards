@@ -125,8 +125,7 @@
   <div class="card-container" id="cardContainer"></div>
 
   <script>
-    const cards = [ <script>
-  const cardImages = [
+    const cards = [
     { src: 'card1.png', orientation: 'portrait' },
     { src: 'card2.png', orientation: 'portrait' },
     { src: 'card3.png', orientation: 'portrait' },
@@ -538,11 +537,16 @@
     { src: 'card409.png', orientation: 'landscape' },
     { src: 'card410.png', orientation: 'landscape' }, 
     { src: 'card411.png', orientation: 'landscape' },   
-    { src: 'card412.png', orientation: 'landscape' },
+    { src: 'card412.png', orientation: 'landscape' }
 
   ];
 
-    function renderCards() {
+const selectedCards = [];
+const maxSelectable = 5;
+const cardContainer = document.getElementById('cardContainer');
+const modeSelect = document.getElementById('modeSelect');
+   
+ function renderCards() {
       cardContainer.innerHTML = '';
       const mode = modeSelect.value;
       cards.forEach(card => {
@@ -634,5 +638,9 @@
     modeSelect.addEventListener('change', renderCards);
     renderCards();
   </script>
+<footer style="margin-top: 40px; padding: 20px; text-align: center; font-size: 14px; color: #555; border-top: 1px solid #ccc;">
+  Увесь вміст цього сайту є інтелектуальною власністю Ольги Литвиненко. Будь-яке копіювання, відтворення чи поширення можливе лише за згодою правовласника. Всі права захищені. З будь-якими запитами, будь ласка, звертайтеся на suippm@gmail.com
+</footer>
+
 </body>
 </html>
