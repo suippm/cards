@@ -3,133 +3,130 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Картки. Простір Ольги Литвиненко</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Інтерактивні картки. Простір Ольги Литвиненко</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body {
+    body, button, input, select, textarea {
       font-family: 'Montserrat', sans-serif;
-      background: #f9f2e8;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Lora', serif;
+    }
+    body {
+      background-color: #f8f3ec;
+      color: #2d2d2d;
       margin: 0;
       padding: 20px;
-      text-align: center;
-    }
-    h1 {
-      font-family: 'Lora', serif;
-      font-size: 32px;
-      margin-bottom: 20px;
     }
     .controls {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  flex-wrap: wrap;
-  margin-bottom: 10px;
-}
-
-#selection-controls {
-  margin-top: -10px;
-  margin-bottom: 30px;
-}
-    .bottom-controls {
-      display: none;
-    }
-.top-selection-controls {
-  gap: 12px;
-  margin-bottom: 20px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-    select, button {
-      padding: 10px 18px;
-      font-size: 16px;
-      border-radius: 10px;
-      border: none;
-      background-color: #dcc9b6;
-      cursor: pointer;
-    }
-    #cardsContainer {
       display: flex;
       flex-wrap: wrap;
+      gap: 10px;
       justify-content: center;
-      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .top-controls {
+      margin-bottom: 10px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    button {
+      background-color: #e6ddd0;
+      color: #2d2d2d;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: 500;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      background-color: #d6c9b8;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    }
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      overflow: hidden;
+      width: 120px;
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    .card.landscape {
+      width: 160px;
+      height: 120px;
     }
     .card img {
-      width: 150px;
-      height: auto;
-      border-radius: 10px;
-      transition: transform 0.3s ease;
+      max-width: 100%;
+      max-height: 100%;
     }
-    .card img:hover {
-      transform: scale(1.08);
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    .card:hover {
+      box-shadow: 0 0 12px rgba(0,0,0,0.15);
+      transform: translateY(-3px);
     }
-    footer {
-      margin-top: 40px;
+    .card.focused {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(2);
+      z-index: 1000;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+    .focus-button-group {
+      position: fixed;
+      top: calc(50% + 180px);
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1001;
+      display: flex;
+      gap: 10px;
+    }
+    .focus-button-group button {
       font-size: 14px;
-      color: #333;
-      border-top: 1px solid #ccc;
-      padding-top: 15px;
+      white-space: nowrap;
+      padding: 8px 16px;
     }
-    @media (max-width: 600px) {
-      .card img {
-        width: 100px;
-      }
-#selection-controls.hidden-controls { display: none; }
-    }
-.card img.back-hover:hover {
-  filter: brightness(1.2);
-  transform: scale(1.05);
-  box-shadow: 0 0 8px rgba(0,0,0,0.2);
-}
-.hidden-controls {
-  display: none;
-}
   </style>
 </head>
 <body>
-  <h1>Картки. Простір Ольги Литвиненко</h1>
-<div class="controls main-controls">
-  <label>Режим перегляду:
-    <select onchange="switchMode(this.value)">
-      <option value="closed">Закриті картки</option>
+  <h1 style="text-align:center;">Інтерактивні картки</h1>
+  <div class="controls">
+    <div class="top-controls">
+      <button id="topFinishBtn" style="display:none;" onclick="showSelection()">Завершити вибір</button>
+      <button id="topShowBtn" style="display:none;" onclick="showSelection()">Показати вибір</button>
+    </div>
+    <label for="modeSelect">Режим перегляду:</label>
+    <select id="modeSelect">
       <option value="open">Відкриті картки</option>
+      <option value="closed">Закриті картки</option>
     </select>
-  </label>
-  <button onclick="shuffleCards()">Перемішати картки</button>
-  <button onclick="autoSelect()">Автоматичний вибір</button>
-  <button onclick="showAllCards()">Показати всі картки</button>
-</div>
-  <div class="controls hidden-controls" id="selection-controls">
-
-    <button onclick="showSelection()">Показати вибір</button>
-    <button onclick="finalizeSelection()">Завершити вибір</button>
-    <button onclick="clearSelection()">Очистити вибір</button>
-    <label>Режим перегляду:
-      <select onchange="switchMode(this.value)">
-        <option value="closed">Закриті картки</option>
-        <option value="open">Відкриті картки</option>
-      </select>
-    </label>
     <button onclick="shuffleCards()">Перемішати картки</button>
-    <button onclick="autoSelect()">Автоматичний вибір</button>
-    <button onclick="showAllCards()">Показати всі картки</button>
+    <button id="autoSelectBtn" onclick="autoSelectCards()">Автоматичний вибір</button>
+    <button id="showSelectionBtn" onclick="showSelection()">Показати картки</button>
   </div>
-
-  <div id="cardsContainer"></div>
-
-  <div class="bottom-controls">
-    <button onclick="showSelection()">Показати вибір</button>
-    <button onclick="finalizeSelection()">Завершити вибір</button>
-  </div>
-
-  <footer>
-    Увесь вміст цього сайту є інтелектуальною власністю Ольги Литвиненко.
-    Будь-яке копіювання, відтворення чи поширення можливе лише за згодою правовласника.
-    Всі права захищені. З будь-якими запитами, будь ласка, звертайтеся на suippm@gmail.com
-  </footer>
+  <div class="card-container" id="cardContainer"></div>
 
   <script>
-    const cards = [
+    const cards = [ <script>
+  const cardImages = [
     { src: 'card1.png', orientation: 'portrait' },
     { src: 'card2.png', orientation: 'portrait' },
     { src: 'card3.png', orientation: 'portrait' },
@@ -354,7 +351,7 @@
     { src: 'card222.png', orientation: 'portrait' },
     { src: 'card223.png', orientation: 'portrait' },
     { src: 'card224.png', orientation: 'portrait' },
-    { src: 'card225.png', orientation: 'landscape' },    
+    { src: 'card225.png', orientation: 'portrait' },    
     { src: 'card226.png', orientation: 'landscape' },
     { src: 'card227.png', orientation: 'landscape' },
     { src: 'card228.png', orientation: 'landscape' },
@@ -541,132 +538,101 @@
     { src: 'card409.png', orientation: 'landscape' },
     { src: 'card410.png', orientation: 'landscape' }, 
     { src: 'card411.png', orientation: 'landscape' },   
-    { src: 'card412.png', orientation: 'landscape' }
+    { src: 'card412.png', orientation: 'landscape' },
 
   ];
 
-let selectedCards = [];
-let currentMode = "closed";
     function renderCards() {
-      const cardsContainer = document.getElementById("cardsContainer");
-      const bottomControls = document.querySelector(".bottom-controls");
-      cardsContainer.innerHTML = "";
-const selectionControls = document.getElementById("selection-controls");
-if (selectedCards.length > 0) {
-  selectionControls.classList.remove("hidden-controls");
-} else {
-  selectionControls.classList.add("hidden-controls");
-}
-
-      bottomControls.style.display = selectedCards.length > 0 ? "flex" : "none";
-
-      cards.forEach((card, index) => {
-        const cardElement = document.createElement("div");
-        cardElement.className = "card";
-
-        const img = document.createElement("img");
-        if (currentMode === "open" || selectedCards.includes(index)) {
-  img.src = card.src;
-  if (card.orientation === 'landscape') {
-    img.style.transform = 'rotate(90deg)';
-  }
-} else {
-  img.src = "back.png";
-  img.classList.add("back-hover");
-}
-
-        if ((currentMode === "open" || selectedCards.includes(index)) && card.orientation === 'landscape') {
-          img.style.transform = 'rotate(90deg)';
-        }
-        cardElement.appendChild(img);
-
-        if (currentMode === "closed") {
-          cardElement.onclick = () => {
-            if (selectedCards.includes(index)) {
-              alert("Цю картку вже обрано.");
-              return;
-            }
-            if (selectedCards.length >= 5) {
-              alert("Максимум 5 карток");
-              return;
-            }
-            selectedCards.push(index);
-document.getElementById("selection-controls").classList.remove("hidden-controls");
-            renderCards();
-          };
-        } else {
-          cardElement.onclick = () => focusCard(index);
-        }
-
-        cardsContainer.appendChild(cardElement);
+      cardContainer.innerHTML = '';
+      const mode = modeSelect.value;
+      cards.forEach(card => {
+        card.isBack = mode === 'closed';
+        const div = document.createElement('div');
+        div.className = 'card' + (card.orientation === 'landscape' ? ' landscape' : '');
+        div.onclick = () => focusCard(card);
+        const img = document.createElement('img');
+        img.src = card.isBack ? 'back.png' : card.src;
+        img.onerror = () => { img.alt = "⚠️"; };
+        div.appendChild(img);
+        cardContainer.appendChild(div);
       });
     }
 
-  function switchMode(mode) {
-  currentMode = mode;
-  renderCards();
-  const selectionControls = document.getElementById("selection-controls");
-  if (selectedCards.length > 0) {
-    selectionControls.classList.remove("hidden-controls");
-  } else {
-    selectionControls.classList.add("hidden-controls");
-  }
-}
-
     function shuffleCards() {
-      for (let i = cards.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [cards[i], cards[j]] = [cards[j], cards[i]];
-      }
+      cards.sort(() => 0.5 - Math.random());
       renderCards();
+    }
+
+    function focusCard(card) {
+      if (selectedCards.length >= maxSelectable) {
+        alert("Максимум 5 карток.");
+        return;
+      }
+      const allCards = document.querySelectorAll('.card');
+      allCards.forEach(c => c.classList.remove('focused'));
+      const target = Array.from(allCards).find(div => div.querySelector('img')?.src.includes(card.src));
+      if (!target) return;
+      target.classList.add('focused');
+
+      const btnGroup = document.createElement('div');
+      btnGroup.className = 'focus-button-group';
+      btnGroup.innerHTML = `
+        <button onclick="selectCard('${card.src}')">Обрати цю картку</button>
+        <button onclick="closeFocus()">Скасувати</button>
+      `;
+      document.body.appendChild(btnGroup);
+    }
+
+    function closeFocus() {
+      document.querySelectorAll('.card').forEach(c => c.classList.remove('focused'));
+      document.querySelectorAll('.focus-button-group').forEach(g => g.remove());
+    }
+
+    function selectCard(src) {
+      const card = cards.find(c => c.src === src);
+      if (!card || card.selected) return;
+      card.selected = true;
+      selectedCards.push(card);
+      closeFocus();
+      document.getElementById('topFinishBtn').style.display = 'inline-block';
     }
 
     function showSelection() {
-      const cardsContainer = document.getElementById("cardsContainer");
-      cardsContainer.innerHTML = "";
-      selectedCards.forEach(index => {
-        const cardElement = document.createElement("div");
-        cardElement.className = "card";
-        const img = document.createElement("img");
-        img.src = cards[index].src;
-        if (cards[index].orientation === 'landscape') {
-          img.style.transform = 'rotate(90deg)';
-        }
-        cardElement.appendChild(img);
-        cardsContainer.appendChild(cardElement);
+      cardContainer.innerHTML = '';
+      selectedCards.forEach(card => {
+        const div = document.createElement('div');
+        div.className = 'card' + (card.orientation === 'landscape' ? ' landscape' : '');
+        const img = document.createElement('img');
+        img.src = card.src;
+        img.onclick = () => focusCard(card);
+        div.appendChild(img);
+        cardContainer.appendChild(div);
       });
+      document.getElementById('topFinishBtn').style.display = 'none';
+      document.getElementById('topShowBtn').style.display = 'inline-block';
     }
 
-    function finalizeSelection() {
+    function autoSelectCards() {
+      resetSelection();
+      const shuffled = [...cards].sort(() => 0.5 - Math.random());
+      const selected = shuffled.slice(0, 3);
+      selected.forEach(card => {
+        card.selected = true;
+        selectedCards.push(card);
+      });
       showSelection();
     }
 
-    function clearSelection() {
-      selectedCards = [];
+    function resetSelection() {
+      selectedCards.length = 0;
+      cards.forEach(c => c.selected = false);
+      document.getElementById('topFinishBtn').style.display = 'none';
+      document.getElementById('topShowBtn').style.display = 'none';
       renderCards();
     }
 
-    function showAllCards() {
-      clearSelection();
-      switchMode("open");
-    }
-
-    function autoSelect() {
-      clearSelection();
-      const total = Math.min(3, cards.length);
-      const indices = [];
-      while (indices.length < total) {
-        const index = Math.floor(Math.random() * cards.length);
-        if (!indices.includes(index)) indices.push(index);
-      }
-      selectedCards = indices;
-      showSelection();
-    }
-
+    modeSelect.addEventListener('change', renderCards);
     renderCards();
   </script>
-<script>
-  document.getElementById("selection-controls").classList.add("hidden-controls");
-</script>
 </body>
 </html>
