@@ -1,122 +1,116 @@
+
 <!DOCTYPE html>
 <html lang="uk">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Аналітичні картки. Простір Ольги Литвиненко</title>
-  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@600&family=Montserrat&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Картки. Простір Ольги Литвиненко</title>
   <style>
     body {
       font-family: 'Montserrat', sans-serif;
-      background-color: #f8f1e7;
+      background: #f9f2e8;
       margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      padding: 20px;
+      text-align: center;
     }
     h1 {
       font-family: 'Lora', serif;
-      margin-top: 30px;
-      text-align: center;
+      font-size: 32px;
+      margin-bottom: 20px;
     }
-    .controls {
-      margin: 20px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-    }
-    button, select {
-      font-family: 'Montserrat', sans-serif;
-      padding: 10px 15px;
-      font-size: 16px;
-      border-radius: 12px;
-      border: none;
-      background-color: #d9c8b4;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    button:hover {
-      background-color: #c5b39f;
-    }
-    .cards-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 12px;
-      padding: 10px;
-    }
-    .card {
-     width: 28vw;
-  max-width: 130px;
-  height: 40vw;
-  max-height: 180px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
-  position: relative;
-}
-.card:hover {
-  transform: scale(1.2);
-  z-index: 10;
-  box-shadow: 0 0 12px rgba(191, 152, 117, 0.8);
-}
-.card img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-}
-    .footer {
-      text-align: center;
-      font-size: 14px;
-      margin-top: 30px;
-      padding: 20px;
-      border-top: 1px solid #ccc;
-      width: 100%;
-    }
-    .bottom-controls {
-      margin: 20px 0;
+    .controls, .bottom-controls {
       display: flex;
       justify-content: center;
       gap: 15px;
       flex-wrap: wrap;
+      margin-bottom: 20px;
     }
+    .bottom-controls {
+      display: none;
+    }
+.top-selection-controls {
+  gap: 12px;
+  margin-bottom: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+    select, button {
+      padding: 10px 18px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: none;
+      background-color: #dcc9b6;
+      cursor: pointer;
+    }
+    #cardsContainer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+    }
+    .card img {
+      width: 150px;
+      height: auto;
+      border-radius: 10px;
+      transition: transform 0.3s ease;
+    }
+    .card img:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #333;
+      border-top: 1px solid #ccc;
+      padding-top: 15px;
+    }
+    @media (max-width: 600px) {
+      .card img {
+        width: 100px;
+      }
+#selection-controls.hidden-controls { display: none; }
+    }
+.card img.back-hover:hover {
+  filter: brightness(1.2);
+  transform: scale(1.05);
+  box-shadow: 0 0 8px rgba(0,0,0,0.2);
+}
+.hidden-controls {
+  display: none;
+}
   </style>
 </head>
 <body>
   <h1>Картки. Простір Ольги Литвиненко</h1>
+  <div class="controls hidden-controls" id="selection-controls">
 
-<div class="controls">
-  <button onclick="showSelection()">Показати вибір</button>
-  <button onclick="resetSelection()">Завершити вибір</button>
-  <button onclick="clearSelection()">Очистити вибір</button>
-  <label for="mode">Режим перегляду:</label>
-  <select id="mode" onchange="switchMode(this.value)">
-    <option value="closed">Закриті картки</option>
-    <option value="open">Відкриті картки</option>
-  </select>
-  <button onclick="shuffleCards()">Перемішати картки</button>
-  <button onclick="autoPick()">Автоматичний вибір</button>
-  <button onclick="showAllCards()">Показати всі картки</button>
-</div>
-
-  <div class="cards-container" id="cardsContainer"></div>
-
-<div class="bottom-controls">
-  <button onclick="showSelection()">Показати вибір</button>
-  <button onclick="resetSelection()">Завершити вибір</button>
-</div>
-
-  <div class="footer">
-    Увесь вміст цього сайту є інтелектуальною власністю Ольги Литвиненко. Будь-яке копіювання, відтворення чи поширення можливе лише за згодою правовласника. Всі права захищені. З будь-якими запитами, будь ласка, звертайтеся на suippm@gmail.com
+    <button onclick="showSelection()">Показати вибір</button>
+    <button onclick="finalizeSelection()">Завершити вибір</button>
+    <button onclick="clearSelection()">Очистити вибір</button>
+    <label>Режим перегляду:
+      <select onchange="switchMode(this.value)">
+        <option value="closed">Закриті картки</option>
+        <option value="open">Відкриті картки</option>
+      </select>
+    </label>
+    <button onclick="shuffleCards()">Перемішати картки</button>
+    <button onclick="autoSelect()">Автоматичний вибір</button>
+    <button onclick="showAllCards()">Показати всі картки</button>
   </div>
+
+  <div id="cardsContainer"></div>
+
+  <div class="bottom-controls">
+    <button onclick="showSelection()">Показати вибір</button>
+    <button onclick="finalizeSelection()">Завершити вибір</button>
+  </div>
+
+  <footer>
+    Увесь вміст цього сайту є інтелектуальною власністю Ольги Литвиненко.
+    Будь-яке копіювання, відтворення чи поширення можливе лише за згодою правовласника.
+    Всі права захищені. З будь-якими запитами, будь ласка, звертайтеся на suippm@gmail.com
+  </footer>
 
   <script>
     const cards = [
@@ -535,40 +529,60 @@
 
   ];
 
-    const cardsContainer = document.getElementById("cardsContainer");
-    let currentMode = "closed";
-    let selectedCards = [];
-
+let selectedCards = [];
+let currentMode = "closed";
     function renderCards() {
+      const cardsContainer = document.getElementById("cardsContainer");
+      const bottomControls = document.querySelector(".bottom-controls");
       cardsContainer.innerHTML = "";
+      bottomControls.style.display = selectedCards.length > 0 ? "flex" : "none";
+
       cards.forEach((card, index) => {
         const cardElement = document.createElement("div");
         cardElement.className = "card";
+
         const img = document.createElement("img");
-        img.src = currentMode === "open" || selectedCards.includes(index) ? card.src : "back.png";
-          if ((currentMode === "open" || selectedCards.includes(index)) && card.orientation === 'landscape') {
-            img.style.transform = 'rotate(90deg)';
-           }
-        img.alt = "card";
+        if (currentMode === "open" || selectedCards.includes(index)) {
+  img.src = card.src;
+  if (card.orientation === 'landscape') {
+    img.style.transform = 'rotate(90deg)';
+  }
+} else {
+  img.src = "back.png";
+  img.classList.add("back-hover");
+}
+
+        if ((currentMode === "open" || selectedCards.includes(index)) && card.orientation === 'landscape') {
+          img.style.transform = 'rotate(90deg)';
+        }
         cardElement.appendChild(img);
-        cardElement.onclick = () => focusCard(index);
-          if (!selectedCards.includes(index)) {
+
+        if (currentMode === "closed") {
+          cardElement.onclick = () => {
+            if (selectedCards.includes(index)) {
+              alert("Цю картку вже обрано.");
+              return;
+            }
             if (selectedCards.length >= 5) {
               alert("Максимум 5 карток");
               return;
             }
             selectedCards.push(index);
+document.getElementById("selection-controls").classList.remove("hidden-controls");
             renderCards();
-          }
-        };
+          };
+        } else {
+          cardElement.onclick = () => focusCard(index);
+        }
+
         cardsContainer.appendChild(cardElement);
       });
     }
 
     function switchMode(mode) {
       currentMode = mode;
-      selectedCards = [];
       renderCards();
+document.getElementById("selection-controls").classList.add("hidden-controls");
     }
 
     function shuffleCards() {
@@ -579,115 +593,52 @@
       renderCards();
     }
 
-    function autoPick() {
-      selectedCards = [];
-      const count = 3;
-      while (selectedCards.length < count) {
-        const rand = Math.floor(Math.random() * cards.length);
-        if (!selectedCards.includes(rand)) selectedCards.push(rand);
-      }
-      renderCards();
-    }
-
     function showSelection() {
+      const cardsContainer = document.getElementById("cardsContainer");
       cardsContainer.innerHTML = "";
-      selectedCards.forEach(i => {
-        const card = cards[i];
+      selectedCards.forEach(index => {
         const cardElement = document.createElement("div");
         cardElement.className = "card";
         const img = document.createElement("img");
-      if (card.orientation === 'landscape') {
-        img.style.transform = 'rotate(90deg)';
-    }
-        img.src = card.src;
-        img.alt = "card";
+        img.src = cards[index].src;
+        if (cards[index].orientation === 'landscape') {
+          img.style.transform = 'rotate(90deg)';
+        }
         cardElement.appendChild(img);
         cardsContainer.appendChild(cardElement);
       });
     }
 
-    function showAllCards() {
+    function finalizeSelection() {
+      showSelection();
+    }
+
+    function clearSelection() {
       selectedCards = [];
       renderCards();
     }
 
-    function clearSelection() {
-  selectedCards = [];
-  switchMode(currentMode);
-}
+    function showAllCards() {
+      clearSelection();
+      switchMode("open");
+    }
 
-    function resetSelection() {
-      if (selectedCards.length === 0) {
-        alert("Жодної картки не обрано.");
-        return;
+    function autoSelect() {
+      clearSelection();
+      const total = Math.min(3, cards.length);
+      const indices = [];
+      while (indices.length < total) {
+        const index = Math.floor(Math.random() * cards.length);
+        if (!indices.includes(index)) indices.push(index);
       }
+      selectedCards = indices;
       showSelection();
     }
 
     renderCards();
   </script>
 <script>
-function focusCard(index) {
-  const overlay = document.createElement("div");
-  overlay.style.position = "fixed";
-  overlay.style.top = 0;
-  overlay.style.left = 0;
-  overlay.style.width = "100vw";
-  overlay.style.height = "100vh";
-  overlay.style.backgroundColor = "rgba(0,0,0,0.5)";
-  overlay.style.backdropFilter = "blur(8px)";
-  overlay.style.display = "flex";
-  overlay.style.justifyContent = "center";
-  overlay.style.alignItems = "center";
-  overlay.style.zIndex = 1000;
-
-  const cardContainer = document.createElement("div");
-  cardContainer.style.background = "white";
-  cardContainer.style.padding = "20px";
-  cardContainer.style.borderRadius = "12px";
-  cardContainer.style.boxShadow = "0 0 15px rgba(0,0,0,0.4)";
-
-  const img = document.createElement("img");
-  img.src = cards[index].src;
-  img.style.maxWidth = "80vw";
-  img.style.maxHeight = "80vh";
-  if (cards[index].orientation === 'landscape') {
-    img.style.transform = 'rotate(90deg)';
-  }
-
-  const button = document.createElement("button");
-  button.innerText = "Обрати цю картку";
-  button.style.marginTop = "20px";
-  button.style.padding = "10px 20px";
-  button.style.fontSize = "16px";
-  button.style.borderRadius = "10px";
-  button.style.border = "none";
-  button.style.backgroundColor = "#c5b39f";
-  button.style.cursor = "pointer";
-
-  button.onclick = () => {
-    if (selectedCards.includes(index)) {
-      alert("Цю картку вже обрано.");
-      return;
-    }
-    if (selectedCards.length >= 5) {
-      alert("Максимум 5 карток");
-      return;
-    }
-    selectedCards.push(index);
-    document.body.removeChild(overlay);
-    renderCards();
-  };
-
-  cardContainer.appendChild(img);
-  cardContainer.appendChild(button);
-  overlay.appendChild(cardContainer);
-
-  overlay.onclick = (e) => {
-    if (e.target === overlay) document.body.removeChild(overlay);
-  };
-
-  document.body.appendChild(overlay);
-}
+  document.getElementById("selection-controls").classList.add("hidden-controls");
+</script>
 </body>
 </html>
