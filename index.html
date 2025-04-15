@@ -4,129 +4,181 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Інтерактивні картки. Простір Ольги Литвиненко</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <title>Вибір карток</title>
   <style>
-    body, button, input, select, textarea {
-      font-family: 'Montserrat', sans-serif;
-    }
-    h1, h2, h3, h4, h5, h6 {
-      font-family: 'Lora', serif;
-    }
     body {
-      background-color: #f8f3ec;
-      color: #2d2d2d;
+      font-family: Montserrat, sans-serif;
+      background: #fefefe;
       margin: 0;
-      padding: 20px;
-    }
-    .controls {
+      padding: 0;
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-    .top-controls {
-      margin-bottom: 10px;
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-    }
-    button {
-      background-color: #e6ddd0;
-      color: #2d2d2d;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      font-weight: 500;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      transition: all 0.3s ease;
-    }
-    button:hover {
-      background-color: #d6c9b8;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-    }
-    .card-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-    }
-    .card {
-      background-color: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      overflow: hidden;
-      width: 120px;
-      height: 160px;
-      display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
     }
+
+    .controls {
+      margin: 1rem auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    button {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 1.5rem;
+      background-color: #444;
+      color: white;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #222;
+    }
+
+    #cardContainer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      padding-bottom: 100px;
+    }
+
+    .card {
+      width: 120px;
+      height: 180px;
+      overflow: hidden;
+      border-radius: 8px;
+      transition: transform 0.3s, box-shadow 0.3s;
+      position: relative;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
     .card.landscape {
-      width: 160px;
+      width: 180px;
       height: 120px;
     }
-    .card img {
-      max-width: 100%;
-      max-height: 100%;
+
+    .card.selected {
+      outline: 3px solid #33aa33;
+      transform: scale(1.05);
     }
-    .card:hover {
-      box-shadow: 0 0 12px rgba(0,0,0,0.15);
-      transform: translateY(-3px);
+
+    .card.hover {
+      box-shadow: 0 0 0 3px #888;
+      transform: scale(1.03);
     }
-    .card.focused {
+
+    #focusView {
       position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(2);
-      z-index: 1000;
-      box-shadow: 0 0 20px rgba(0,0,0,0.3);
-    }
-    .focus-button-group {
-      position: fixed;
-      top: calc(50% + 180px);
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1001;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.8);
       display: flex;
-      gap: 10px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
     }
-    .focus-button-group button {
-      font-size: 14px;
-      white-space: nowrap;
-      padding: 8px 16px;
+
+    #focusBackground {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    #focusImage {
+      max-width: 80vw;
+      max-height: 80vh;
+      border-radius: 1rem;
+      box-shadow: 0 0 12px rgba(255,255,255,0.5);
+      background: white;
+    }
+
+    #focusImage.landscape {
+      transform: rotate(0deg);
+    }
+
+    #focusButtons {
+      margin-top: 20px;
+      z-index: 1001;
+    }
+
+    @media screen and (max-width: 600px) {
+      .card {
+        width: 80px;
+        height: 120px;
+      }
+
+      .card.landscape {
+        width: 120px;
+        height: 80px;
+      }
+
+      button {
+        font-size: 0.85rem;
+        padding: 0.4rem 1rem;
+      }
+
+      #focusImage {
+        max-width: 90vw;
+        max-height: 60vh;
+      }
     }
   </style>
 </head>
 <body>
-  <h1 style="text-align:center;">Інтерактивні картки</h1>
-  <div class="controls">
-    <div class="top-controls">
-      <button id="topFinishBtn" style="display:none;" onclick="showSelection()">Завершити вибір</button>
-      <button id="topShowBtn" style="display:none;" onclick="showSelection()">Показати вибір</button>
-    </div>
-    <label for="modeSelect">Режим перегляду:</label>
-    <select id="modeSelect">
-      <option value="open">Відкриті картки</option>
-      <option value="closed">Закриті картки</option>
-    </select>
-    <button onclick="shuffleCards()">Перемішати картки</button>
-    <button id="autoSelectBtn" onclick="autoSelectCards()">Автоматичний вибір</button>
-    <button id="showSelectionBtn" onclick="showSelection()">Показати картки</button>
-  </div>
-  <div class="card-container" id="cardContainer"></div>
 
-  <script>
-    const cards = [ 
-    { src: 'card1.png', orientation: 'portrait' },
+<div id="controls-top" class="controls" style="display: none;">
+  <button onclick="showSelection()">Показати вибір</button>
+  <button onclick="finalizeSelection()">Завершити вибір</button>
+  <button onclick="clearSelection()">Очистити вибір</button>
+  <button onclick="showAllCards()">Показати всі картки</button>
+</div>
+
+<div class="controls">
+  <label>Режим перегляду:
+    <select onchange="switchMode(this.value)">
+      <option value="closed">Закриті картки</option>
+      <option value="open">Відкриті картки</option>
+    </select>
+  </label>
+  <button onclick="shuffleCards()">Перемішати картки</button>
+  <button onclick="autoSelect()">Автоматичний вибір</button>
+</div>
+
+<div id="cardContainer"></div>
+
+<div id="controls-bottom" class="controls" style="display: none;">
+  <button onclick="showSelection()">Показати вибір</button>
+  <button onclick="finalizeSelection()">Завершити вибір</button>
+  <button onclick="clearSelection()">Очистити вибір</button>
+  <button onclick="showAllCards()">Показати всі картки</button>
+</div>
+
+<div id="focusView" style="display: none;">
+  <div id="focusBackground"></div>
+  <img id="focusImage" />
+  <div id="focusButtons">
+    <button onclick="selectFocusedCard()">Обрати цю картку</button>
+    <button onclick="showSelection()">Показати мій вибір</button>
+  </div>
+</div>
+
+<script>
+  const cards = [
+ { src: 'card1.png', orientation: 'portrait' },
     { src: 'card2.png', orientation: 'portrait' },
     { src: 'card3.png', orientation: 'portrait' },
     { src: 'card4.png', orientation: 'portrait' },
@@ -540,98 +592,10 @@
     { src: 'card412.png', orientation: 'landscape' },
 
   ];
+</script>
 
-    function renderCards() {
-      cardContainer.innerHTML = '';
-      const mode = modeSelect.value;
-      cards.forEach(card => {
-        card.isBack = mode === 'closed';
-        const div = document.createElement('div');
-        div.className = 'card' + (card.orientation === 'landscape' ? ' landscape' : '');
-        div.onclick = () => focusCard(card);
-        const img = document.createElement('img');
-        img.src = card.isBack ? 'back.png' : card.src;
-        img.onerror = () => { img.alt = "⚠️"; };
-        div.appendChild(img);
-        cardContainer.appendChild(div);
-      });
-    }
+<!-- FUNCTIONALITY -->
+<script src="logic.js"></script>
 
-    function shuffleCards() {
-      cards.sort(() => 0.5 - Math.random());
-      renderCards();
-    }
-
-    function focusCard(card) {
-      if (selectedCards.length >= maxSelectable) {
-        alert("Максимум 5 карток.");
-        return;
-      }
-      const allCards = document.querySelectorAll('.card');
-      allCards.forEach(c => c.classList.remove('focused'));
-      const target = Array.from(allCards).find(div => div.querySelector('img')?.src.includes(card.src));
-      if (!target) return;
-      target.classList.add('focused');
-
-      const btnGroup = document.createElement('div');
-      btnGroup.className = 'focus-button-group';
-      btnGroup.innerHTML = `
-        <button onclick="selectCard('${card.src}')">Обрати цю картку</button>
-        <button onclick="closeFocus()">Скасувати</button>
-      `;
-      document.body.appendChild(btnGroup);
-    }
-
-    function closeFocus() {
-      document.querySelectorAll('.card').forEach(c => c.classList.remove('focused'));
-      document.querySelectorAll('.focus-button-group').forEach(g => g.remove());
-    }
-
-    function selectCard(src) {
-      const card = cards.find(c => c.src === src);
-      if (!card || card.selected) return;
-      card.selected = true;
-      selectedCards.push(card);
-      closeFocus();
-      document.getElementById('topFinishBtn').style.display = 'inline-block';
-    }
-
-    function showSelection() {
-      cardContainer.innerHTML = '';
-      selectedCards.forEach(card => {
-        const div = document.createElement('div');
-        div.className = 'card' + (card.orientation === 'landscape' ? ' landscape' : '');
-        const img = document.createElement('img');
-        img.src = card.src;
-        img.onclick = () => focusCard(card);
-        div.appendChild(img);
-        cardContainer.appendChild(div);
-      });
-      document.getElementById('topFinishBtn').style.display = 'none';
-      document.getElementById('topShowBtn').style.display = 'inline-block';
-    }
-
-    function autoSelectCards() {
-      resetSelection();
-      const shuffled = [...cards].sort(() => 0.5 - Math.random());
-      const selected = shuffled.slice(0, 3);
-      selected.forEach(card => {
-        card.selected = true;
-        selectedCards.push(card);
-      });
-      showSelection();
-    }
-
-    function resetSelection() {
-      selectedCards.length = 0;
-      cards.forEach(c => c.selected = false);
-      document.getElementById('topFinishBtn').style.display = 'none';
-      document.getElementById('topShowBtn').style.display = 'none';
-      renderCards();
-    }
-
-    modeSelect.addEventListener('change', renderCards);
-    renderCards();
-  </script>
 </body>
 </html>
